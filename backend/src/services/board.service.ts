@@ -44,11 +44,11 @@ export const createBoard = async ({
     members: members ?? [],
   });
 
-  return board;
+  return board.populate("members");
 };
 
 export const getBoards = async () => {
-  return Board.find().sort({ createdAt: -1 });
+  return Board.find().sort({ createdAt: -1 }).populate("members");
 };
 
 export const getBoardById = async (id: string) => {
@@ -100,7 +100,7 @@ export const updateBoard = async (
   // Save changes
   await board.save();
 
-  return board;
+  return board.populate("members");
 };
 
 export const deleteBoard = async (id: string) => {

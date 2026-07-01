@@ -143,9 +143,9 @@ export const assignUserToCardController = async (
 ) => {
   try {
     const { id } = req.params as { id: string };
-    const { userId } = req.body as { userId: string };
+    const { assignedUserId } = req.body as { assignedUserId: string };
 
-    const card = await assignUserToCard(id, userId);
+    const card = await assignUserToCard(id, assignedUserId);
 
     return res.status(200).json({
       success: true,

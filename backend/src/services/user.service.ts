@@ -1,4 +1,7 @@
 import User from "../models/User";
+import Board from "../models/Board";
+import Card from "../models/Card";
+import mongoose from "mongoose";
 
 interface CreateUserInput {
   name: string;
@@ -44,5 +47,34 @@ export const updateUser = async (
 };
 
 export const deleteUser = async (id: string) => {
-  return User.findByIdAndDelete(id);
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    // 1. Remove user from all boards' members arrays
+    await Board.updateMany(
+      { members: id },
+      { $pull: { members: id } },
+      { session }
+    );
+
+    // 2. Unassign user from all cards
+    await Card.updateMany(
+      { assignedUserId: id },
+      { $set: { assignedUserId: null } },
+      { session }
+    );
+
+    // 3. Delete the user
+    const user = await User.findByIdAndDelete(id, { session });
+
+    await session.commitTransaction();
+
+    return user;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    session.endSession();
+  }
 };
