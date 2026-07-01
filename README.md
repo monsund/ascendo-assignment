@@ -2,6 +2,11 @@
 
 A full-stack Trello-like kanban board management application built with Next.js, Express.js, and MongoDB.
 
+## 🌐 Live Demo
+
+- **Frontend**: https://ascendo-assignment.vercel.app/boards (Vercel)
+- **Backend API**: https://ascendo-assignment.onrender.com/api (Render)
+
 ## 📚 Documentation
 
 - **[Backend Documentation](./backend/README.md)** - Express API, MongoDB schemas, and all endpoints

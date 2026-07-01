@@ -89,6 +89,18 @@ npm run dev
 ```
 The application will start on `http://localhost:3000`
 
+### Production
+```bash
+npm run build
+npm start
+```
+
+### Live Deployment
+The frontend is deployed on Vercel:
+```
+https://ascendo-assignment.vercel.app/boards
+```
+
 ### Production Build
 ```bash
 npm run build
