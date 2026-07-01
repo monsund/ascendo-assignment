@@ -27,6 +27,7 @@ const listSchema = new Schema<IList>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 

@@ -70,7 +70,7 @@ Create a `.env` file in the `backend/` directory:
 
 ```env
 # Database
-MONGODB_URI=mongodb://localhost:27017/ascendo
+MONGODB_URI=mongodb+srv://monsoon:mongopwd@cluster0.z3j0b.mongodb.net/ascendo?retryWrites=true&w=majority
 
 # Server
 PORT=4000
@@ -80,8 +80,10 @@ PORT=4000
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `MONGODB_URI` | MongoDB connection string | `mongodb://localhost:27017/ascendo` or `mongodb+srv://user:pass@cluster.mongodb.net/ascendo` |
+| `MONGODB_URI` | MongoDB connection string | `mongodb+srv://monsoon:mongopwd@cluster0.z3j0b.mongodb.net/ascendo?retryWrites=true&w=majority` (Atlas) or `mongodb://localhost:27017/ascendo` (Local) |
 | `PORT` | Server port | `4000` |
+
+**Note**: The `.env` file is typically excluded from version control (see `.gitignore`), but for this assignment, it has been provided with the connection URI for MongoDB Atlas.
 
 ---
 
@@ -91,7 +93,7 @@ PORT=4000
 ```bash
 npm run dev
 ```
-The server will start on `http://localhost:4000`
+The server will start on `http://localhost:4000` (Local) or `https://ascendo-assignment.onrender.com` (Cloud)
 
 ### Production Build
 ```bash
@@ -100,8 +102,15 @@ npm start
 ```
 
 ### Health Check
+
+**Local:**
 ```bash
 GET http://localhost:4000/health
+```
+
+**Cloud:**
+```bash
+GET https://ascendo-assignment.onrender.com/health
 ```
 
 Response:
@@ -117,9 +126,21 @@ Response:
 ## API Endpoints
 
 ### Base URL
+
+**Local Development:**
 ```
 http://localhost:4000/api
 ```
+
+**Cloud/Production:**
+```
+https://ascendo-assignment.onrender.com/api
+```
+
+**For this assignment:** 
+- Local development uses `http://localhost:4000` with all API endpoints prefixed with `/api`
+- Cloud deployment uses `https://ascendo-assignment.onrender.com/api`
+- Ensure your frontend `.env` file points to the correct URL (NEXT_PUBLIC_API_URL)
 
 ---
 

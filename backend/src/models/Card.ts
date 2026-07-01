@@ -53,6 +53,7 @@ const cardSchema = new Schema<ICard>(
   },
   {
     timestamps: true,
+    versionKey: false,
   }
 );
 

@@ -2,6 +2,8 @@
 node_modules/
 
 # Environment variables
+# NOTE: For this assignment, .env is tracked in version control
+# Typically, .env should be in .gitignore in production environments
 # .env
 # .env.local
 

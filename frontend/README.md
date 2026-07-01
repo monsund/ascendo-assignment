@@ -37,7 +37,7 @@ Ascendo Frontend is a modern web application that provides a user-friendly inter
 ### Prerequisites
 - Node.js (v20.9.0 or higher)
 - npm or yarn
-- Backend API running on `http://localhost:4000` (or configured URL)
+- Backend API running on `http://localhost:4000` (Local) or `https://ascendo-assignment.onrender.com` (Cloud)
 
 ### Setup Steps
 
@@ -59,17 +59,25 @@ npm install
 
 Create a `.env.local` file in the `frontend/` directory:
 
+**For Local Development:**
 ```env
 NEXT_PUBLIC_API_URL=http://localhost:4000/api
+```
+
+**For Cloud/Production:**
+```env
+NEXT_PUBLIC_API_URL=https://ascendo-assignment.onrender.com/api
 ```
 
 ### Variable Descriptions
 
 | Variable | Description | Example |
 |----------|-------------|---------|
-| `NEXT_PUBLIC_API_URL` | Backend API base URL (must start with `NEXT_PUBLIC_` to be accessible in browser) | `http://localhost:4000/api` or `https://api.ascendo.com/api` |
+| `NEXT_PUBLIC_API_URL` | Backend API base URL (must start with `NEXT_PUBLIC_` to be accessible in browser) | `http://localhost:4000/api` (Local) or `https://ascendo-assignment.onrender.com/api` (Cloud) |
 
-**Note:** The `NEXT_PUBLIC_` prefix makes this variable accessible in the browser. Never include sensitive data (like API keys) in public environment variables.
+**Notes:** 
+- The `NEXT_PUBLIC_` prefix makes this variable accessible in the browser. Never include sensitive data (like API keys) in public environment variables.
+- The `.env` file is typically excluded from version control, but for this assignment it has been provided for convenience.
 
 ---
 
