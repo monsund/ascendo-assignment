@@ -236,3 +236,58 @@ export const assignUserToCard = async (
   return await card.populate("assignedUserId", "name email");
 };
 
+export const moveCard = async (
+  cardId: string,
+  destinationListId: string
+) => {
+  // Validate Card ID
+  if (!mongoose.Types.ObjectId.isValid(cardId)) {
+    throw new Error("Invalid card id.");
+  }
+
+  // Find Card
+  const card = await Card.findById(cardId);
+
+  if (!card) {
+    throw new Error("Card not found.");
+  }
+
+  // Validate destination List ID
+  if (!mongoose.Types.ObjectId.isValid(destinationListId)) {
+    throw new Error("Invalid list id.");
+  }
+
+  // Find destination List
+  const destinationList = await List.findById(destinationListId);
+
+  if (!destinationList) {
+    throw new Error("List not found.");
+  }
+
+  // Find current List
+  const currentList = await List.findById(card.listId);
+
+  if (!currentList) {
+    throw new Error("Current list not found.");
+  }
+
+  // Check if destination list is the same as current list
+  if (destinationList._id.toString() === currentList._id.toString()) {
+    throw new Error("Card is already in this list.");
+  }
+
+  // Ensure destination list belongs to the same board
+  if (destinationList.boardId.toString() !== currentList.boardId.toString()) {
+    throw new Error(
+      "Cards can only be moved within the same board."
+    );
+  }
+
+  // Update card's list
+  card.listId = new mongoose.Types.ObjectId(destinationListId);
+
+  await card.save();
+
+  return card;
+};
+

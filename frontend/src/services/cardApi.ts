@@ -53,3 +53,10 @@ export const assignUser = async (cardId: string, userId: string | null) => {
   });
   return response.data.data;
 };
+
+export const moveCard = async (cardId: string, listId: string) => {
+  const response = await api.patch(`/cards/${cardId}/move`, {
+    listId,
+  });
+  return response.data.data;
+};

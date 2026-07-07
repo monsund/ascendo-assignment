@@ -1,5 +1,5 @@
 import { Request, Response } from "express";
-import { assignUserToCard, createCard, deleteCard, getCardById, getCards, updateCard } from "../services/card.service";
+import { assignUserToCard, createCard, deleteCard, getCardById, getCards, updateCard, moveCard } from "../services/card.service";
 
 export const createCardController = async (
   req: Request,
@@ -159,6 +159,55 @@ export const assignUserToCardController = async (
         error instanceof Error
           ? error.message
           : "Internal Server Error",
+    });
+  }
+};
+
+export const moveCardController = async (
+  req: Request,
+  res: Response
+) => {
+  try {
+    const { id } = req.params as { id: string };
+    const { listId } = req.body as { listId: string };
+
+    const card = await moveCard(id, listId);
+
+    return res.status(200).json({
+      success: true,
+      message: "Card moved successfully.",
+      data: card,
+    });
+  } catch (error: unknown) {
+    const errorMessage = error instanceof Error
+      ? error.message
+      : "Internal Server Error";
+
+    // Handle specific errors with appropriate status codes
+    if (
+      errorMessage.includes("Card not found") ||
+      errorMessage.includes("List not found") ||
+      errorMessage.includes("Current list not found")
+    ) {
+      return res.status(404).json({
+        success: false,
+        message: errorMessage,
+      });
+    }
+
+    if (
+      errorMessage.includes("Cards can only be moved within the same board") ||
+      errorMessage.includes("Card is already in this list")
+    ) {
+      return res.status(400).json({
+        success: false,
+        message: errorMessage,
+      });
+    }
+
+    return res.status(500).json({
+      success: false,
+      message: errorMessage,
     });
   }
 };

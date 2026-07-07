@@ -56,13 +56,8 @@ export default function AssignUserDialog({
       setMembers(allMembers);
 
       // Pre-select current assignee
-      if (card.assignedUser) {
-        const user =
-          typeof card.assignedUser === "object" ? card.assignedUser : null;
-        setSelectedUser(user || null);
-      } else if (typeof card.assignedUserId === "object" && card.assignedUserId) {
-        // Backend populates assignedUserId as an object
-        setSelectedUser(card.assignedUserId as User);
+      if (card.assignedUserId) {
+        setSelectedUser(card.assignedUserId);
       } else {
         setSelectedUser(UNASSIGNED_OPTION);
       }
@@ -72,7 +67,7 @@ export default function AssignUserDialog({
     } finally {
       setLoading(false);
     }
-  }, [boardId, card.assignedUser, card.assignedUserId]);
+  }, [boardId, card.assignedUserId]);
 
   useEffect(() => {
     if (open) {

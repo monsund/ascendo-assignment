@@ -3,6 +3,6 @@ export interface List {
   boardId: string;
   title: string;
   position: number;
-  createdAt: string;
-  updatedAt: string;
+  createdAt?: string;
+  updatedAt?: string;
 }

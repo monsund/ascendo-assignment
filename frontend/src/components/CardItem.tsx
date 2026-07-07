@@ -22,7 +22,9 @@ import { MoreVert } from "@mui/icons-material";
 import { Card as CardType } from "@/types/card";
 import EditCardDialog from "@/dialogs/EditCardDialog";
 import AssignUserDialog from "@/dialogs/AssignUserDialog";
-import { deleteCard, assignUser } from "@/services/cardApi";
+import { deleteCard } from "@/services/cardApi";
+import MoveCardDialog from "@/dialogs/MoveCardDialog";
+import { User } from "@/types/user";
 
 interface CardItemProps {
   card: CardType;
@@ -39,9 +41,8 @@ export default function CardItem({
   const [openEditDialog, setOpenEditDialog] = useState(false);
   const [openDeleteDialog, setOpenDeleteDialog] = useState(false);
   const [openAssignDialog, setOpenAssignDialog] = useState(false);
-  const [openUnassignDialog, setOpenUnassignDialog] = useState(false);
+  const [openMoveDialog, setOpenMoveDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
-  const [unassigning, setUnassigning] = useState(false);
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -101,26 +102,13 @@ export default function CardItem({
     onCardUpdated?.();
   };
 
-  const handleUnassignClick = () => {
-    setOpenUnassignDialog(true);
+  const handleMoveClick = () => {
+    setOpenMoveDialog(true);
     handleMenuClose();
   };
 
-  const handleUnassignCancel = () => {
-    setOpenUnassignDialog(false);
-  };
-
-  const handleUnassignConfirm = async () => {
-    setUnassigning(true);
-
-    try {
-      await assignUser(card._id, null);
-      setOpenUnassignDialog(false);
-      onCardUpdated?.();
-    } catch (error) {
-      console.error("Failed to unassign user:", error);
-      setUnassigning(false);
-    }
+  const handleMoveClose = () => {
+    setOpenMoveDialog(false);
   };
   return (
     <Card
@@ -182,16 +170,9 @@ export default function CardItem({
         >
           <MenuItem onClick={handleEditClick}>Edit</MenuItem>
           <MenuItem onClick={handleAssignClick}>
-            {card.assignedUser ? "Change Assignee" : "Assign User"}
+            Assign User
           </MenuItem>
-          {card.assignedUser && (
-            <MenuItem
-              onClick={handleUnassignClick}
-              sx={{ color: "warning.main" }}
-            >
-              Unassign User
-            </MenuItem>
-          )}
+          <MenuItem onClick={handleMoveClick}>Move</MenuItem>
           <MenuItem onClick={handleDeleteClick} sx={{ color: "error.main" }}>
             Delete
           </MenuItem>
@@ -218,15 +199,13 @@ export default function CardItem({
 
           <Typography
             variant="caption"
-            color={card.assignedUser || (typeof card.assignedUserId === "object" && card.assignedUserId) ? "text.secondary" : "error"}
+            color={card.assignedUserId ? "text.secondary" : "error"}
             sx={{
-              fontWeight: card.assignedUser || (typeof card.assignedUserId === "object" && card.assignedUserId) ? 400 : 500,
+              fontWeight: card.assignedUserId ? 400 : 500,
             }}
           >
-            {card.assignedUser
-              ? `👤 ${card.assignedUser.name}`
-              : typeof card.assignedUserId === "object" && card.assignedUserId
-              ? `👤 ${(card.assignedUserId as any).name}`
+            {card.assignedUserId
+              ? `👤 ${card.assignedUserId.name}`
               : "Unassigned"}
           </Typography>
         </Stack>
@@ -273,46 +252,6 @@ export default function CardItem({
         </DialogActions>
       </Dialog>
 
-      <Dialog
-        open={openUnassignDialog}
-        onClose={handleUnassignCancel}
-        maxWidth="xs"
-        fullWidth
-      >
-        <DialogTitle sx={{ fontWeight: 600 }}>Unassign User</DialogTitle>
-        <DialogContent sx={{ pt: 2 }}>
-          <Typography>
-            Are you sure you want to unassign the user from this card?
-          </Typography>
-        </DialogContent>
-        <DialogActions sx={{ p: 2, gap: 1 }}>
-          <Button onClick={handleUnassignCancel} disabled={unassigning}>
-            Cancel
-          </Button>
-          <Button
-            onClick={handleUnassignConfirm}
-            variant="contained"
-            color="warning"
-            disabled={unassigning}
-            sx={{ position: "relative" }}
-          >
-            {unassigning ? (
-              <Box
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: 1,
-                }}
-              >
-                <CircularProgress size={20} color="inherit" />
-                Unassigning...
-              </Box>
-            ) : (
-              "Unassign"
-            )}
-          </Button>
-        </DialogActions>
-      </Dialog>
 
       <AssignUserDialog
         open={openAssignDialog}
@@ -327,6 +266,17 @@ export default function CardItem({
         card={card}
         onClose={handleEditClose}
         onSuccess={handleEditSuccess}
+      />
+
+      <MoveCardDialog
+        open={openMoveDialog}
+        card={card}
+        boardId={boardId}
+        onClose={handleMoveClose}
+        onSuccess={() => {
+          onCardUpdated?.();
+          handleMoveClose();
+        }}
       />
     </Card>
   );
