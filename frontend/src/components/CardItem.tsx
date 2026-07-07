@@ -24,7 +24,6 @@ import EditCardDialog from "@/dialogs/EditCardDialog";
 import AssignUserDialog from "@/dialogs/AssignUserDialog";
 import { deleteCard } from "@/services/cardApi";
 import MoveCardDialog from "@/dialogs/MoveCardDialog";
-import { User } from "@/types/user";
 
 interface CardItemProps {
   card: CardType;

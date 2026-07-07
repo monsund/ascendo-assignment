@@ -33,8 +33,10 @@ export default function EditCardDialog({
   const [error, setError] = useState("");
 
   // Pre-populate form when dialog opens
+  
   useEffect(() => {
     if (open && card) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setTitle(card.name);
       setDescription(card.description || "");
       setError("");

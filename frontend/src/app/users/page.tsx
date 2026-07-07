@@ -19,6 +19,7 @@ import {
   DialogTitle,
   DialogContent,
   DialogActions,
+  Stack,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import EditIcon from "@mui/icons-material/Edit";
@@ -108,23 +109,34 @@ export default function UsersPage() {
 
   if (loading) {
     return (
-      <Container maxWidth="lg" sx={{ mt: 4, display: "flex", justifyContent: "center", py: 8 }}>
-        <CircularProgress />
-      </Container>
+      <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", py: 4 }}>
+        <Container maxWidth="sm">
+          <Stack spacing={2} sx={{ alignItems: "center", textAlign: "center" }}>
+            <CircularProgress />
+            <Typography variant="h6" sx={{ color: "#000" }}>
+              Loading board...
+            </Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              Note: We are using a free tier server, so it may take a moment to load.
+            </Typography>
+          </Stack>
+        </Container>
+      </Box>
     );
   }
 
   return (
-    <Container maxWidth="lg" sx={{ mt: 4, mb: 4 }}>
-      {/* Header */}
-      <Box
-        sx={{
-          display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
-          marginBottom: "24px",
-        }}
-      >
+    <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", py: 4 }}>
+      <Container maxWidth="lg">
+        {/* Header */}
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+            marginBottom: "24px",
+          }}
+        >
         <Typography variant="h4" sx={{ fontWeight: 600 }}>
           Users
         </Typography>
@@ -249,6 +261,7 @@ export default function UsersPage() {
           </Button>
         </DialogActions>
       </Dialog>
-    </Container>
+      </Container>
+    </Box>
   );
 }

@@ -29,6 +29,7 @@ import {
   DialogContent,
   DialogActions,
   Alert,
+  CircularProgress,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
 import MoreVertIcon from "@mui/icons-material/MoreVert";
@@ -37,6 +38,7 @@ export default function BoardDetailsPage() {
   const { id } = useParams();
 
   const [board, setBoard] = useState<Board | null>(null);
+  const [loading, setLoading] = useState(true);
   const [lists, setLists] = useState<List[]>([]);
   const [cards, setCards] = useState<CardType[]>([]);
   const [openDialogListId, setOpenDialogListId] = useState<string | null>(null);
@@ -145,9 +147,16 @@ export default function BoardDetailsPage() {
     };
 
     const initializeBoard = async () => {
-      await fetchBoard();
-      await fetchLists();
-      await fetchCards();
+      try {
+        setLoading(true);
+        await Promise.all([
+            fetchBoard(),
+            fetchLists(),
+            fetchCards(),
+        ]);
+      } finally {
+        setLoading(false);
+      }
     };
 
     initializeBoard();
@@ -160,8 +169,22 @@ export default function BoardDetailsPage() {
     });
   };
 
-  if (!board) {
-    return <p>Loading...</p>;
+  if (loading) {
+    return (
+      <Box sx={{ bgcolor: "#f5f5f5", minHeight: "100vh", display: "flex", alignItems: "center", justifyContent: "center", py: 4 }}>
+        <Container maxWidth="sm">
+          <Stack spacing={2} sx={{ alignItems: "center", textAlign: "center" }}>
+            <CircularProgress />
+            <Typography variant="h6" sx={{ color: "#000" }}>
+              Loading board...
+            </Typography>
+            <Typography variant="body2" sx={{ color: "text.secondary" }}>
+              Note: We are using a free tier server, so it may take a moment to load.
+            </Typography>
+          </Stack>
+        </Container>
+      </Box>
+    );
   }
 
   return (
@@ -176,7 +199,7 @@ export default function BoardDetailsPage() {
           }}
         >
           <Typography variant="h4" sx={{ fontWeight: 600, color: "#000" }}>
-            {board.name}
+            {board?.name}
           </Typography>
           <Button
             variant="contained"
@@ -189,11 +212,11 @@ export default function BoardDetailsPage() {
         </Box>
 
         <Typography sx={{ mb: 1, color: "#000" }}>
-          Privacy: {board.privacy}
+          Privacy: {board?.privacy}
         </Typography>
 
         <Typography sx={{ mb: 4, color: "#000" }}>
-          Members: {board.members.length}
+          Members: {board?.members.length}
         </Typography>
       </Container>
 

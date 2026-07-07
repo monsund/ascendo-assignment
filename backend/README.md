@@ -709,6 +709,47 @@ PUT /cards/:id/assign
 
 ---
 
+### Move Card
+```
+PATCH /cards/:id/move
+```
+
+**Request Body:**
+```json
+{
+  "listId": "4567abcdef123457"
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Card moved successfully.",
+  "data": {
+    "_id": "3456abcdef123456",
+    "name": "Implement user authentication",
+    "description": "Add JWT-based authentication to the API",
+    "listId": "4567abcdef123457",
+    "boardId": "5678abcdef123456",
+    "assignedUserId": "6789abcdef123456",
+    "createdAt": "2026-07-02T10:00:00Z",
+    "updatedAt": "2026-07-02T10:45:00Z"
+  }
+}
+```
+
+**Note:** The destination list must belong to the same board as the current card's board.
+
+**Error Cases:**
+- `404`: Card not found
+- `404`: List not found
+- `400`: Card is already in this list
+- `400`: Destination list belongs to a different board
+- `500`: Invalid card ID or list ID format
+
+---
+
 ### Delete Card
 ```
 DELETE /cards/:id

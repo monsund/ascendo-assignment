@@ -205,6 +205,7 @@ frontend/
 - Add/edit/delete lists
 - Create/edit/delete cards
 - Assign users to cards
+- Move cards between lists
 - Light background with dark text for readability
 
 ### Users Page (`/users`)
