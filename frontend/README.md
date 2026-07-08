@@ -169,6 +169,7 @@ frontend/
 - **Team Collaboration**: Add members to boards for team collaboration
 - **Lists Organization**: Create and manage lists (columns) within boards
 - **Card Management**: Create, edit, delete cards with descriptions
+- **Card Reordering**: Drag-and-drop cards to reorder within lists with visual feedback
 - **User Assignment**: Assign team members to specific cards
 - **Users Management**: Create, edit, delete team members
 - **Responsive Design**: Works seamlessly on desktop and tablet devices
@@ -176,6 +177,7 @@ frontend/
 ### 🎨 UI Features
 - Clean Material-UI design system
 - Navigation tabs (Boards, Users)
+- Drag-and-drop card reordering with visual feedback (opacity, shadow, cursor)
 - Confirmation dialogs for destructive actions
 - Loading states and error handling
 - Truncated text with hover tooltips for long content

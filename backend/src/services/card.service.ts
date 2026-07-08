@@ -19,17 +19,14 @@ export const createCard = async ({
   name,
   description,
 }: CreateCardInput) => {
-  // Validate Board ID
   if (!mongoose.Types.ObjectId.isValid(boardId)) {
     throw new Error("Invalid board id.");
   }
 
-  // Validate List ID
   if (!mongoose.Types.ObjectId.isValid(listId)) {
     throw new Error("Invalid list id.");
   }
 
-  // Validate Assigned User ID (optional)
   if (
     assignedUserId &&
     !mongoose.Types.ObjectId.isValid(assignedUserId)
@@ -37,26 +34,22 @@ export const createCard = async ({
     throw new Error("Invalid assigned user id.");
   }
 
-  // Check Board exists
   const board = await Board.findById(boardId);
 
   if (!board) {
     throw new Error("Board not found.");
   }
 
-  // Check List exists
   const list = await List.findById(listId);
 
   if (!list) {
     throw new Error("List not found.");
   }
 
-  // Ensure List belongs to Board
   if (list.boardId.toString() !== boardId) {
     throw new Error("List does not belong to the board.");
   }
 
-  // Validate assigned user (if provided)
   if (assignedUserId) {
     const user = await User.findById(assignedUserId);
 
@@ -75,7 +68,6 @@ export const createCard = async ({
     }
   }
 
-  // Determine next position in this list
   const lastCard = await Card.findOne({
     listId,
   }).sort({
@@ -84,7 +76,6 @@ export const createCard = async ({
 
   const position = lastCard ? lastCard.position + 1 : 1;
 
-  // Create card
   const card = await Card.create({
     boardId,
     listId,
@@ -108,12 +99,10 @@ export const getCards = async () => {
 };
 
 export const getCardById = async (id: string) => {
-  // Validate Card ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error("Invalid card id.");
   }
 
-  // Find card
   const card = await Card.findById(id)
     .populate("boardId", "name privacy")
     .populate("listId", "title position")
@@ -135,19 +124,16 @@ export const updateCard = async (
   id: string,
   data: UpdateCardInput
 ) => {
-  // Validate Card ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error("Invalid card id.");
   }
 
-  // Check if card exists
   const card = await Card.findById(id);
 
   if (!card) {
     throw new Error("Card not found.");
   }
 
-  // Update card
   card.name = data.name;
   card.description = data.description;
 
@@ -157,19 +143,16 @@ export const updateCard = async (
 };
 
 export const deleteCard = async (id: string) => {
-  // Validate Card ID
   if (!mongoose.Types.ObjectId.isValid(id)) {
     throw new Error("Invalid card id.");
   }
 
-  // Check if card exists
   const card = await Card.findById(id);
 
   if (!card) {
     throw new Error("Card not found.");
   }
 
-  // Delete card
   await card.deleteOne();
 
   return card;
@@ -179,19 +162,16 @@ export const assignUserToCard = async (
   cardId: string,
   userId: string | null
 ) => {
-  // Validate Card ID
   if (!mongoose.Types.ObjectId.isValid(cardId)) {
     throw new Error("Invalid card id.");
   }
 
-  // Find Card
   const card = await Card.findById(cardId);
 
   if (!card) {
     throw new Error("Card not found.");
   }
 
-  // Unassign
   if (userId === null) {
     card.assignedUserId = null;
 
@@ -200,26 +180,22 @@ export const assignUserToCard = async (
     return card;
   }
 
-  // Validate User ID
   if (!mongoose.Types.ObjectId.isValid(userId)) {
     throw new Error("Invalid user id.");
   }
 
-  // Find User
   const user = await User.findById(userId);
 
   if (!user) {
     throw new Error("User not found.");
   }
 
-  // Find Board
   const board = await Board.findById(card.boardId);
 
   if (!board) {
     throw new Error("Board not found.");
   }
 
-  // Ensure user belongs to board
   const isMember = board.members.some(
     (member) => member.toString() === userId
   );
@@ -228,7 +204,6 @@ export const assignUserToCard = async (
     throw new Error("User is not a member of this board.");
   }
 
-  // Assign user
   card.assignedUserId = new mongoose.Types.ObjectId(userId);
 
   await card.save();
@@ -240,54 +215,117 @@ export const moveCard = async (
   cardId: string,
   destinationListId: string
 ) => {
-  // Validate Card ID
   if (!mongoose.Types.ObjectId.isValid(cardId)) {
     throw new Error("Invalid card id.");
   }
 
-  // Find Card
   const card = await Card.findById(cardId);
 
   if (!card) {
     throw new Error("Card not found.");
   }
 
-  // Validate destination List ID
   if (!mongoose.Types.ObjectId.isValid(destinationListId)) {
     throw new Error("Invalid list id.");
   }
 
-  // Find destination List
   const destinationList = await List.findById(destinationListId);
 
   if (!destinationList) {
     throw new Error("List not found.");
   }
 
-  // Find current List
   const currentList = await List.findById(card.listId);
 
   if (!currentList) {
     throw new Error("Current list not found.");
   }
 
-  // Check if destination list is the same as current list
   if (destinationList._id.toString() === currentList._id.toString()) {
     throw new Error("Card is already in this list.");
   }
 
-  // Ensure destination list belongs to the same board
   if (destinationList.boardId.toString() !== currentList.boardId.toString()) {
     throw new Error(
       "Cards can only be moved within the same board."
     );
   }
 
-  // Update card's list
   card.listId = new mongoose.Types.ObjectId(destinationListId);
 
   await card.save();
 
   return card;
+};
+
+export interface ReorderCardInput {
+  id: string;
+  position: number;
+}
+
+export const reorderCards = async (
+  listId: string,
+  cardsToReorder: ReorderCardInput[]
+) => {
+  if (!mongoose.Types.ObjectId.isValid(listId)) {
+    throw new Error("Invalid list id.");
+  }
+
+  const list = await List.findById(listId);
+
+  if (!list) {
+    throw new Error("List not found.");
+  }
+
+  const operations = [];
+
+  const cardIds: mongoose.Types.ObjectId[] = [];
+  for (const cardData of cardsToReorder) {
+    if (!mongoose.Types.ObjectId.isValid(cardData.id)) {
+      throw new Error(`Invalid card id: ${cardData.id}`);
+    }
+    cardIds.push(new mongoose.Types.ObjectId(cardData.id));
+  }
+
+  const existingCards = await Card.find({
+    _id: { $in: cardIds },
+  });
+
+  const cardMap = new Map(
+    existingCards.map((card) => [card._id.toString(), card])
+  );
+
+  for (const cardData of cardsToReorder) {
+    const card = cardMap.get(cardData.id);
+
+    if (!card) {
+      throw new Error(`Card not found: ${cardData.id}`);
+    }
+
+    if (card.listId.toString() !== listId) {
+      throw new Error(
+        `Card ${cardData.id} does not belong to list ${listId}.`
+      );
+    }
+
+    operations.push({
+      updateOne: {
+        filter: { _id: card._id },
+        update: { $set: { position: cardData.position } },
+      },
+    });
+  }
+
+  if (operations.length > 0) {
+    await Card.bulkWrite(operations);
+  }
+
+  const updatedCards = await Card.find({ listId })
+    .populate("boardId", "name privacy")
+    .populate("listId", "title position")
+    .populate("assignedUserId", "name email")
+    .sort({ position: 1 });
+
+  return updatedCards;
 };
 

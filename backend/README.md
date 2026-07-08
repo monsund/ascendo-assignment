@@ -750,6 +750,43 @@ PATCH /cards/:id/move
 
 ---
 
+### Reorder Cards
+```
+PATCH /cards/reorder
+```
+
+**Request Body:**
+```json
+{
+  "listId": "4567abcdef123456",
+  "cards": [
+    { "id": "3456abcdef123456", "position": 1 },
+    { "id": "3456abcdef123457", "position": 2 },
+    { "id": "3456abcdef123458", "position": 3 }
+  ]
+}
+```
+
+**Response (200 OK):**
+```json
+{
+  "success": true,
+  "message": "Cards reordered successfully."
+}
+```
+
+**Note:** This endpoint allows reordering cards within a single list. All cards in the `cards` array must belong to the specified list. Positions should start from 1 and be sequential.
+
+**Error Cases:**
+- `400`: Missing `listId` or `cards` array
+- `400`: Empty `cards` array
+- `400`: Card does not belong to the specified list
+- `404`: List not found
+- `404`: Card not found
+- `500`: Invalid card ID or list ID format
+
+---
+
 ### Delete Card
 ```
 DELETE /cards/:id
@@ -857,6 +894,7 @@ DELETE /cards/:id
 - Member assignment to boards
 - List management within boards
 - Card management within lists
+- Card reordering within lists with drag-and-drop support
 - User assignment to cards
 - Cascade deletion (deleting a board deletes all lists and cards)
 - Cascade user deletion (removes user from boards and unassigns from cards)

@@ -19,6 +19,7 @@ A full-stack Trello-like kanban board management application built with Next.js,
 - **Team Collaboration**: Add members to boards for team collaboration
 - **Lists Organization**: Create and manage lists (columns) within boards
 - **Card Management**: Create, edit, delete cards with descriptions
+- **Card Reordering**: Drag-and-drop cards to reorder within lists
 - **Card Movement**: Move cards between lists within the same board
 - **User Assignment**: Assign team members to specific cards
 - **Users Management**: Create, edit, delete team members

@@ -18,12 +18,14 @@ import {
   CircularProgress,
   Tooltip,
 } from "@mui/material";
-import { MoreVert } from "@mui/icons-material";
+import { MoreVert, DragIndicator } from "@mui/icons-material";
 import { Card as CardType } from "@/types/card";
 import EditCardDialog from "@/dialogs/EditCardDialog";
 import AssignUserDialog from "@/dialogs/AssignUserDialog";
 import { deleteCard } from "@/services/cardApi";
 import MoveCardDialog from "@/dialogs/MoveCardDialog";
+import { useSortable } from "@dnd-kit/sortable";
+import { CSS } from "@dnd-kit/utilities";
 
 interface CardItemProps {
   card: CardType;
@@ -42,6 +44,20 @@ export default function CardItem({
   const [openAssignDialog, setOpenAssignDialog] = useState(false);
   const [openMoveDialog, setOpenMoveDialog] = useState(false);
   const [deleting, setDeleting] = useState(false);
+
+  const {
+    attributes,
+    listeners,
+    setNodeRef,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({ id: card._id });  
+
+  const style = {
+    transform: CSS.Transform.toString(transform),
+    transition,
+  };
 
   const handleMenuOpen = (event: React.MouseEvent<HTMLButtonElement>) => {
     setAnchorEl(event.currentTarget);
@@ -111,6 +127,8 @@ export default function CardItem({
   };
   return (
     <Card
+      ref={setNodeRef}
+      style={style}
       elevation={2}
       sx={{
         borderRadius: 2,
@@ -119,6 +137,9 @@ export default function CardItem({
         flexDirection: "column",
         position: "relative",
         transition: "all 0.2s ease-in-out",
+        opacity: isDragging ? 0.6 : 1,
+        zIndex: isDragging ? 1000 : "auto",
+        boxShadow: isDragging ? 6 : 2,
         "&:hover": {
           elevation: 4,
           boxShadow: 3,
@@ -129,12 +150,27 @@ export default function CardItem({
         <Box
           sx={{
             display: "flex",
-            justifyContent: "space-between",
             alignItems: "flex-start",
             gap: 1,
             mb: 1,
           }}
         >
+          <IconButton
+            size="small"
+            {...attributes}
+            {...listeners}
+            sx={{
+              cursor: isDragging ? "grabbing" : "grab",
+              flexShrink: 0,
+              "&:active": {
+                cursor: "grabbing",
+              },
+            }}
+          >
+            <Tooltip title="Drag to reorder">
+              <DragIndicator fontSize="small" />
+            </Tooltip>
+          </IconButton>
           <Typography
             variant="h6"
             sx={{

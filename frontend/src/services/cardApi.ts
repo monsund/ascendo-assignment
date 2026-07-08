@@ -60,3 +60,17 @@ export const moveCard = async (cardId: string, listId: string) => {
   });
   return response.data.data;
 };
+
+export const reorderCards = async (
+  listId: string,
+  cards: {
+    id: string;
+    position: number;
+  }[]
+) => {
+  const response = await api.patch("/cards/reorder", {
+    listId,
+    cards,
+  });
+  return response.data.data;
+};
