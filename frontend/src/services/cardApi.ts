@@ -7,12 +7,8 @@ export const getCards = async () => {
 };
 
 export const getCardsByBoard = async (boardId: string) => {
-  const response = await api.get("/cards");
-  const allCards: Card[] = response.data.data;
-  return allCards.filter((card) => {
-    const id = typeof card.boardId === "string" ? card.boardId : card.boardId._id;
-    return id === boardId;
-  });
+  const response = await api.get("/cards", { params: { boardId } });
+  return response.data.data as Card[];
 };
 
 export const createCard = async (

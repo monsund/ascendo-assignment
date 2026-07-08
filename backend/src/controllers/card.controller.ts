@@ -43,7 +43,8 @@ export const getCardsController = async (
   res: Response
 ) => {
   try {
-    const cards = await getCards();
+    const { boardId } = req.query as { boardId?: string };
+    const cards = await getCards(boardId);
 
     return res.status(200).json({
       success: true,

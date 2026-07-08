@@ -88,8 +88,10 @@ export const createCard = async ({
   return card;
 };
 
-export const getCards = async () => {
-  const cards = await Card.find()
+export const getCards = async (boardId?: string) => {
+  const filter = boardId ? { boardId } : {};
+
+  const cards = await Card.find(filter)
     .populate("boardId", "name privacy")
     .populate("listId", "title position")
     .populate("assignedUserId", "name email")
@@ -319,13 +321,5 @@ export const reorderCards = async (
   if (operations.length > 0) {
     await Card.bulkWrite(operations);
   }
-
-  const updatedCards = await Card.find({ listId })
-    .populate("boardId", "name privacy")
-    .populate("listId", "title position")
-    .populate("assignedUserId", "name email")
-    .sort({ position: 1 });
-
-  return updatedCards;
 };
 
